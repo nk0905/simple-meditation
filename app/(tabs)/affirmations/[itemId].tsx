@@ -19,7 +19,7 @@ const AffirmationPractice = () => {
   const [sentences, setSentences] = useState<string[]>([]);
 
   useEffect(() => {
-    for (let idx = 0; idx < AFFIRMATION_GALLERY.length; idx) {
+    for (let idx = 0; idx < AFFIRMATION_GALLERY.length; idx++) {
       const affirmationsData = AFFIRMATION_GALLERY[idx].data;
 
       const affirmationToStart = affirmationsData.find(
