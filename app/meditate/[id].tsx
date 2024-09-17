@@ -108,8 +108,13 @@ const Meditate = () => {
 
           <View className="mb-5">
             <CustomButton
+              title="Adjust duration"
+              onPress={toggleMeditationSessionStatus}
+            />
+            <CustomButton
               title="Start Meditation"
               onPress={toggleMeditationSessionStatus}
+              containerStyles="mt-4"
             />
           </View>
         </AppGradient>
