@@ -1,5 +1,5 @@
 import { View, Text, ImageBackground, Pressable } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MEDITATION_IMAGES from '@/constants/meditation-images';
 import AppGradient from '@/components/AppGradient';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -7,11 +7,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 import { Audio } from 'expo-av';
 import { AUDIO_FILES, MEDITATION_DATA } from '@/constants/MeditationData';
+import { TimerContext } from '@/context/TimerContext';
 
 const Meditate = () => {
   const { id } = useLocalSearchParams();
 
-  const [secondsRemaining, setSecondsRemaining] = useState(10);
+  const { duration: secondsRemaining, setDuration } = useContext(TimerContext);
   const [isMeditating, setMeditating] = useState(false);
   const [audioSound, setSound] = useState<Audio.Sound>();
   const [isPlayAudio, setPlayingAudio] = useState(false);
@@ -30,7 +31,7 @@ const Meditate = () => {
     if (isMeditating) {
       // Save the interval ID to clear it when the component unmounts
       timerId = setTimeout(() => {
-        setSecondsRemaining(secondsRemaining - 1);
+        setDuration(secondsRemaining - 1);
       }, 1000);
     }
 
@@ -42,12 +43,13 @@ const Meditate = () => {
 
   useEffect(() => {
     return () => {
+      setDuration(10);
       audioSound?.unloadAsync();
     };
   }, [audioSound]);
 
   const toggleMeditationSessionStatus = async () => {
-    if (secondsRemaining === 0) setSecondsRemaining(10);
+    if (secondsRemaining === 0) setDuration(10);
 
     setMeditating(!isMeditating);
 
@@ -75,6 +77,14 @@ const Meditate = () => {
 
     setSound(sound);
     return sound;
+  };
+
+  const handleAdjustDuration = () => {
+    if (isMeditating) {
+      toggleMeditationSessionStatus();
+    }
+
+    router.push('/(modal)/adjust-meditation-duration');
   };
 
   // Format the timeLeft to ensure two digits are displayed
@@ -109,10 +119,10 @@ const Meditate = () => {
           <View className="mb-5">
             <CustomButton
               title="Adjust duration"
-              onPress={toggleMeditationSessionStatus}
+              onPress={handleAdjustDuration}
             />
             <CustomButton
-              title="Start Meditation"
+              title={isMeditating ? 'Stop' : 'Start Meditation'}
               onPress={toggleMeditationSessionStatus}
               containerStyles="mt-4"
             />
